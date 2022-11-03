@@ -1,24 +1,40 @@
-dungeon = ds_grid_create(room_width / CELL_SIZE, room_height / CELL_SIZE);
+var _dungeonWidth = floor(room_width / CELL_SIZE);
+var _dungeonHeight = floor(room_height / CELL_SIZE);
+dungeon = ds_grid_create(_dungeonWidth, _dungeonHeight);
 
+// Keeps track of all room structs
 roomList = ds_list_create();
+
+// Room size ranges
 roomWidthMin = 8;
 roomWidthMax = 10;
 roomHeightMin = 8;
 roomHeightMax = 10;
 
+// Hallway size ranges
 hallwayLengthMin = 3;
 hallwayLengthMax = 8;
 hallwayWidthMin = 2;
 hallwayWidthMax = 3;
 
+// Room to create a new room from
 currentRoom = noone;
 
+// 1 in n chance of branching from the newly created room
 branchOdds = 4;
 
+// The number of failed iterations to create a new room
 iterations = 0;
+
+// The maximum number of failed iterations before quitting generation
 iterationMax = 50;
 
 GenerateNewDungeon = function() {
+	
+	// Reset dungeon data
+	iterations = 0;
+	ds_list_clear(roomList);
+	tilemap_clear(layer_tilemap_get_id(layer_get_id("Tiles")), 0);
 	
 	var _dungeonWidth = ds_grid_width(dungeon);
 	var _dungeonHeight = ds_grid_height(dungeon);
