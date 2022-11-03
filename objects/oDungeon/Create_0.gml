@@ -1,19 +1,19 @@
 dungeon = ds_grid_create(room_width / CELL_SIZE, room_height / CELL_SIZE);
 
 roomList = ds_list_create();
-roomWidthMin = 6;
+roomWidthMin = 8;
 roomWidthMax = 10;
-roomHeightMin = 6;
+roomHeightMin = 8;
 roomHeightMax = 10;
 
 hallwayLengthMin = 3;
-hallwayLengthMax = 7;
+hallwayLengthMax = 8;
 hallwayWidthMin = 2;
 hallwayWidthMax = 3;
 
 currentRoom = noone;
 
-branchOdds = 3;
+branchOdds = 4;
 
 iterations = 0;
 iterationMax = 50;
@@ -28,23 +28,28 @@ GenerateNewDungeon = function() {
 	
 	while (iterations < iterationMax) {
 		
+		// Generate a random room width and height
 		var _roomWidth = irandom_range(roomWidthMin, roomWidthMax);
 		var _roomHeight = irandom_range(roomHeightMin, roomHeightMax);
 		
 		if (!ds_list_empty(roomList)) {
 			
 			var _createdHallway = false;
-
+			
+			// Make a direction of possible directions to traverse from the current room
 			var _dirList = ds_list_create();
 			ds_list_add(_dirList, DIRECTIONS.WEST, DIRECTIONS.EAST, DIRECTIONS.NORTH, DIRECTIONS.SOUTH);
 	
 			while (!ds_list_empty(_dirList)) {
-			
+				
+				// Remove a random cardinal direction
+				
 				var _dirIndex = irandom(ds_list_size(_dirList) - 1);
 			
 				var _dir = _dirList[| _dirIndex];
 				ds_list_delete(_dirList, _dirIndex);
-			
+				
+				// Generate a random hallway length and width
 				var _hallwayLength = irandom_range(hallwayLengthMin, hallwayLengthMax);
 				var _hallwayWidth = irandom_range(hallwayWidthMin, hallwayWidthMax);
 		
@@ -73,7 +78,8 @@ GenerateNewDungeon = function() {
 				//Calculate the bottom right corner of the new room.
 				_roomX2 = _roomX1 + _roomWidth - 1;
 				_roomY2 = _roomY1 + _roomHeight - 1;
-			
+				
+				// Skip this direction if new room is out of bounds
 				if (_roomX1 <= 0 || _roomX1 >= _dungeonWidth - 2 - _roomWidth || _roomY1 <= 0 || _roomY1 >= _dungeonHeight - 2 - _roomHeight) {
 					continue;
 				}
@@ -81,7 +87,7 @@ GenerateNewDungeon = function() {
 				var _hallwayX1, _hallwayX2, _hallwayY1, _hallwayY2;
 				var _minRange, _maxRange;
 			
-				//Connect the new room and previous room with a hallway
+				//Connect the new room and previous room with a hallway, and calculate the hallway's four corners
 				switch (_dir) {
 					case DIRECTIONS.WEST:
 						_hallwayX1 = _roomX2 + 1;
@@ -211,11 +217,13 @@ GenerateNewDungeon = function() {
 						CreateRoom(_roomX1, _roomY1, _roomX2, _roomY2);
 						
 						_createdHallway = true;
-						iterations = 0;
+						iterations = -1;
 						break;
 					}
 				}
 			}
+			
+			iterations++;
 		
 			ds_list_destroy(_dirList);
 			
@@ -252,12 +260,13 @@ CreateRoom = function(_x1, _y1, _x2, _y2) {
 	currentRoom = new DungeonRoom(_x1, _y1, _x2, _y2);
 	ds_list_add(roomList, currentRoom);
 	
-	// Set the room's region within the grid
-	ds_grid_set_region(dungeon, _x1, _y1, _x2, _y2, ROOM);
+	// Fill the dungeon with a room
+	ds_grid_set_region(dungeon, _x1, _y1, _x2, _y2, CELL_TYPES.ROOM);
 }
 
 CreateHallway = function(_x1, _y1, _x2, _y2) {
-	ds_grid_set_region(dungeon, _x1, _y1, _x2, _y2, HALLWAY);
+	// Fill the dungeon with a hallway
+	ds_grid_set_region(dungeon, _x1, _y1, _x2, _y2, CELL_TYPES.HALLWAY);
 }
 
 GenerateNewDungeon();
