@@ -6,10 +6,10 @@ dungeon = ds_grid_create(_dungeonWidth, _dungeonHeight);
 roomList = ds_list_create();
 
 // Room size ranges
-roomWidthMin = 8;
-roomWidthMax = 10;
-roomHeightMin = 8;
-roomHeightMax = 10;
+roomWidthMin = 10;
+roomWidthMax = 12;
+roomHeightMin = 10;
+roomHeightMax = 12;
 
 // Hallway size ranges
 hallwayLengthMin = 3;
@@ -263,10 +263,17 @@ GenerateNewDungeon = function() {
 		for (var yy = 0; yy < _dungeonHeight; yy++) {
 		
 			var _cell = dungeon[# xx, yy];
+			
+			var _tileInd = 0;
 		
-			if (_cell != CELL_TYPES.WALL) {
-				tilemap_set(layer_tilemap_get_id(layer_get_id("Tiles")), 1, xx, yy);
+			if (_cell = CELL_TYPES.ROOM) {
+				_tileInd = 1;
 			}
+			else if (_cell == CELL_TYPES.HALLWAY) {
+				_tileInd = 2;
+			}
+			
+			tilemap_set(layer_tilemap_get_id(layer_get_id("Tiles")), _tileInd, xx, yy);
 		}
 	}
 }
