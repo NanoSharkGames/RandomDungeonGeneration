@@ -1,0 +1,12 @@
+{
+  "FolderOrderSettings":[
+    {"name":"Dungeons","order":7,"path":"folders/Dungeons.yy",},
+    {"name":"Tiles","order":3,"path":"folders/Dungeons/Tiles.yy",},
+  ],
+  "ResourceOrderSettings":[
+    {"name":"rmDungeon","order":2,"path":"rooms/rmDungeon/rmDungeon.yy",},
+    {"name":"DungeonRoom","order":1,"path":"scripts/DungeonRoom/DungeonRoom.yy",},
+    {"name":"Init","order":6,"path":"scripts/Init/Init.yy",},
+    {"name":"tTile","order":1,"path":"tilesets/tTile/tTile.yy",},
+  ],
+}

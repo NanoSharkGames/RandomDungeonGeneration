@@ -1,47 +1,40 @@
 {
-  "resourceType": "GMProject",
-  "resourceVersion": "1.6",
-  "name": "Random Dungeon Generation",
-  "resources": [
-    {"id":{"name":"tTile","path":"tilesets/tTile/tTile.yy",},"order":1,},
-    {"id":{"name":"DungeonRoom","path":"scripts/DungeonRoom/DungeonRoom.yy",},"order":5,},
-    {"id":{"name":"Init","path":"scripts/Init/Init.yy",},"order":6,},
-    {"id":{"name":"oDungeon","path":"objects/oDungeon/oDungeon.yy",},"order":4,},
-    {"id":{"name":"sTile","path":"sprites/sTile/sTile.yy",},"order":0,},
-    {"id":{"name":"rmDungeon","path":"rooms/rmDungeon/rmDungeon.yy",},"order":3,},
+  "$GMProject":"",
+  "%Name":"Random Dungeon Generation",
+  "AudioGroups":[
+    {"$GMAudioGroup":"","%Name":"audiogroup_default","name":"audiogroup_default","resourceType":"GMAudioGroup","resourceVersion":"2.0","targets":-1,},
   ],
-  "Options": [
-    {"name":"Linux","path":"options/linux/options_linux.yy",},
-    {"name":"Windows","path":"options/windows/options_windows.yy",},
-    {"name":"macOS","path":"options/mac/options_mac.yy",},
-    {"name":"Main","path":"options/main/options_main.yy",},
-    {"name":"Amazon Fire","path":"options/amazonfire/options_amazonfire.yy",},
-    {"name":"Android","path":"options/android/options_android.yy",},
-    {"name":"iOS","path":"options/ios/options_ios.yy",},
-    {"name":"tvOS","path":"options/tvos/options_tvos.yy",},
-    {"name":"HTML5","path":"options/html5/options_html5.yy",},
-    {"name":"operagx","path":"options/operagx/options_operagx.yy",},
-  ],
-  "defaultScriptType": 1,
-  "isEcma": false,
-  "configs": {
-    "name": "Default",
-    "children": [],
+  "configs":{
+    "children":[],
+    "name":"Default",
   },
-  "RoomOrderNodes": [
+  "defaultScriptType":1,
+  "Folders":[
+    {"$GMFolder":"","%Name":"Dungeons","folderPath":"folders/Dungeons.yy","name":"Dungeons","resourceType":"GMFolder","resourceVersion":"2.0",},
+    {"$GMFolder":"","%Name":"Tiles","folderPath":"folders/Dungeons/Tiles.yy","name":"Tiles","resourceType":"GMFolder","resourceVersion":"2.0",},
+  ],
+  "IncludedFiles":[],
+  "isEcma":false,
+  "LibraryEmitters":[],
+  "MetaData":{
+    "IDEVersion":"2024.8.1.171",
+  },
+  "name":"Random Dungeon Generation",
+  "resources":[
+    {"id":{"name":"oDungeon","path":"objects/oDungeon/oDungeon.yy",},},
+    {"id":{"name":"rmDungeon","path":"rooms/rmDungeon/rmDungeon.yy",},},
+    {"id":{"name":"DungeonRoom","path":"scripts/DungeonRoom/DungeonRoom.yy",},},
+    {"id":{"name":"Init","path":"scripts/Init/Init.yy",},},
+    {"id":{"name":"sTile","path":"sprites/sTile/sTile.yy",},},
+    {"id":{"name":"tTile","path":"tilesets/tTile/tTile.yy",},},
+  ],
+  "resourceType":"GMProject",
+  "resourceVersion":"2.0",
+  "RoomOrderNodes":[
     {"roomId":{"name":"rmDungeon","path":"rooms/rmDungeon/rmDungeon.yy",},},
   ],
-  "Folders": [
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Tiles","folderPath":"folders/Tiles.yy","order":1,},
+  "templateType":null,
+  "TextureGroups":[
+    {"$GMTextureGroup":"","%Name":"Default","autocrop":true,"border":2,"compressFormat":"bz2","customOptions":"","directory":"","groupParent":null,"isScaled":true,"loadType":"default","mipsToGenerate":0,"name":"Default","resourceType":"GMTextureGroup","resourceVersion":"2.0","targets":-1,},
   ],
-  "AudioGroups": [
-    {"resourceType":"GMAudioGroup","resourceVersion":"1.3","name":"audiogroup_default","targets":-1,},
-  ],
-  "TextureGroups": [
-    {"resourceType":"GMTextureGroup","resourceVersion":"1.3","name":"Default","isScaled":true,"compressFormat":"bz2","loadType":"default","directory":"","autocrop":true,"border":2,"mipsToGenerate":0,"groupParent":null,"targets":-1,},
-  ],
-  "IncludedFiles": [],
-  "MetaData": {
-    "IDEVersion": "2022.0.0.19",
-  },
 }

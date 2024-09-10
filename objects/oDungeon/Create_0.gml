@@ -2,8 +2,7 @@ var _dungeonWidth = floor(room_width / CELL_SIZE);
 var _dungeonHeight = floor(room_height / CELL_SIZE);
 dungeon = ds_grid_create(_dungeonWidth, _dungeonHeight);
 
-// Keeps track of all room structs
-roomList = ds_list_create();
+roomStructs = [];
 
 // Room size ranges
 roomWidthMin = 10;
@@ -33,7 +32,7 @@ GenerateNewDungeon = function() {
 	
 	// Reset dungeon data
 	iterations = 0;
-	ds_list_clear(roomList);
+	array_resize(roomStructs, 0);
 	tilemap_clear(layer_tilemap_get_id(layer_get_id("Tiles")), 0);
 	
 	var _dungeonWidth = ds_grid_width(dungeon);
@@ -44,26 +43,21 @@ GenerateNewDungeon = function() {
 	
 	while (iterations < iterationMax) {
 		
-		// Generate a random room width and height
 		var _roomWidth = irandom_range(roomWidthMin, roomWidthMax);
 		var _roomHeight = irandom_range(roomHeightMin, roomHeightMax);
 		
-		if (!ds_list_empty(roomList)) {
+		var _roomCount = array_length(roomStructs);
+		if (_roomCount > 0) {
 			
 			var _createdHallway = false;
 			
-			// Make a direction of possible directions to traverse from the current room
-			var _dirList = ds_list_create();
-			ds_list_add(_dirList, DIRECTIONS.WEST, DIRECTIONS.EAST, DIRECTIONS.NORTH, DIRECTIONS.SOUTH);
+			var _directions = [DIRECTIONS.WEST, DIRECTIONS.EAST, DIRECTIONS.NORTH, DIRECTIONS.SOUTH];
+			var _directionCount = array_length(_directions);
+			array_shuffle(_directions);
 	
-			while (!ds_list_empty(_dirList)) {
+			repeat (_directionCount) {
 				
-				// Remove a random cardinal direction
-				
-				var _dirIndex = irandom(ds_list_size(_dirList) - 1);
-			
-				var _dir = _dirList[| _dirIndex];
-				ds_list_delete(_dirList, _dirIndex);
+				var _direction = array_pop(_directions);
 				
 				// Generate a random hallway length and width
 				var _hallwayLength = irandom_range(hallwayLengthMin, hallwayLengthMax);
@@ -72,7 +66,7 @@ GenerateNewDungeon = function() {
 				var _roomX1, _roomY1, _roomX2, _roomY2;
 			
 				// Calculate the top left corner of the new room based on distance and direction
-				switch (_dir) {
+				switch (_direction) {
 					case DIRECTIONS.WEST:
 						_roomX1 = currentRoom.x1 - _hallwayLength - _roomWidth;
 						_roomY1 = irandom_range(currentRoom.y1 - _roomHeight + _hallwayWidth, currentRoom.y2 - (_hallwayWidth - 1));
@@ -91,7 +85,7 @@ GenerateNewDungeon = function() {
 						break;
 				}
 			
-				//Calculate the bottom right corner of the new room.
+				// Calculate the bottom right corner of the new room.
 				_roomX2 = _roomX1 + _roomWidth - 1;
 				_roomY2 = _roomY1 + _roomHeight - 1;
 				
@@ -103,8 +97,8 @@ GenerateNewDungeon = function() {
 				var _hallwayX1, _hallwayX2, _hallwayY1, _hallwayY2;
 				var _minRange, _maxRange;
 			
-				//Connect the new room and previous room with a hallway, and calculate the hallway's four corners
-				switch (_dir) {
+				// Connect the new room and previous room with a hallway, and calculate the hallway's four corners
+				switch (_direction) {
 					case DIRECTIONS.WEST:
 						_hallwayX1 = _roomX2 + 1;
 						_hallwayX2 = _hallwayX1 + _hallwayLength - 1;
@@ -209,7 +203,7 @@ GenerateNewDungeon = function() {
 				
 				if (!_isTouching) {
 					
-					//Check if the hallway is touching another room
+					// Check if the hallway is touching another room
 				
 					for (xx = _hallwayX1 - 1; xx <= _hallwayX2 + 1; xx++) {
 					
@@ -240,11 +234,10 @@ GenerateNewDungeon = function() {
 			}
 			
 			iterations++;
-		
-			ds_list_destroy(_dirList);
 			
 		    if (random(branchOdds) < 1) {
-		        currentRoom = roomList[| irandom(ds_list_size(roomList) - 1)];
+				var _randomRoomIndex = irandom(_roomCount - 1);
+		        currentRoom = roomStructs[_randomRoomIndex];
 			}
 		}
 		else {
@@ -261,7 +254,6 @@ GenerateNewDungeon = function() {
 
 	for (var xx = 0; xx < _dungeonWidth; xx++) {
 		for (var yy = 0; yy < _dungeonHeight; yy++) {
-		
 			var _cell = dungeon[# xx, yy];
 			
 			var _tileInd = 0;
@@ -281,7 +273,7 @@ GenerateNewDungeon = function() {
 CreateRoom = function(_x1, _y1, _x2, _y2) {
 	
 	currentRoom = new DungeonRoom(_x1, _y1, _x2, _y2);
-	ds_list_add(roomList, currentRoom);
+	array_push(roomStructs, currentRoom);
 	
 	// Fill the dungeon with a room
 	ds_grid_set_region(dungeon, _x1, _y1, _x2, _y2, CELL_TYPES.ROOM);

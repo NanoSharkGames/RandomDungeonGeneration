@@ -1,11 +1,13 @@
 {
-  "resourceType": "GMScript",
-  "resourceVersion": "1.0",
-  "name": "DungeonRoom",
-  "isDnD": false,
-  "isCompatibility": false,
-  "parent": {
-    "name": "Random Dungeon Generation",
-    "path": "Random Dungeon Generation.yyp",
+  "$GMScript":"v1",
+  "%Name":"DungeonRoom",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"DungeonRoom",
+  "parent":{
+    "name":"Dungeons",
+    "path":"folders/Dungeons.yy",
   },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
 }
