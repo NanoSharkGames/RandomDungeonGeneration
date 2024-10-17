@@ -2,7 +2,7 @@ var _dungeonWidth = floor(room_width / CELL_SIZE);
 var _dungeonHeight = floor(room_height / CELL_SIZE);
 dungeon = ds_grid_create(_dungeonWidth, _dungeonHeight);
 
-roomStructs = [];
+rooms = [];
 
 // Room size ranges
 roomWidthMin = 10;
@@ -16,23 +16,21 @@ hallwayLengthMax = 8;
 hallwayWidthMin = 2;
 hallwayWidthMax = 3;
 
-// Room to create a new room from
-currentRoom = noone;
+roomToExtendFrom = noone;
 
-// 1 in n chance of branching from the newly created room
+// 1 in n chance to choose a random room to branch from
 branchOdds = 4;
 
-// The number of failed iterations to create a new room
-iterations = 0;
+failedIterations = 0;
 
-// The maximum number of failed iterations before quitting generation
+// Number of consecutive failed iterations before quitting generation
 iterationMax = 50;
 
 GenerateNewDungeon = function() {
 	
 	// Reset dungeon data
-	iterations = 0;
-	array_resize(roomStructs, 0);
+	failedIterations = 0;
+	array_resize(rooms, 0);
 	tilemap_clear(layer_tilemap_get_id(layer_get_id("Tiles")), 0);
 	
 	var _dungeonWidth = ds_grid_width(dungeon);
@@ -41,15 +39,13 @@ GenerateNewDungeon = function() {
 	// Fill the whole dungeon with walls to start
 	ds_grid_set_region(dungeon, 0, 0, _dungeonWidth - 1, _dungeonHeight - 1, CELL_TYPES.WALL);
 	
-	while (iterations < iterationMax) {
+	while (failedIterations < iterationMax) {
 		
 		var _roomWidth = irandom_range(roomWidthMin, roomWidthMax);
 		var _roomHeight = irandom_range(roomHeightMin, roomHeightMax);
 		
-		var _roomCount = array_length(roomStructs);
+		var _roomCount = array_length(rooms);
 		if (_roomCount > 0) {
-			
-			var _createdHallway = false;
 			
 			var _directions = [DIRECTIONS.WEST, DIRECTIONS.EAST, DIRECTIONS.NORTH, DIRECTIONS.SOUTH];
 			var _directionCount = array_length(_directions);
@@ -68,20 +64,20 @@ GenerateNewDungeon = function() {
 				// Calculate the top left corner of the new room based on distance and direction
 				switch (_direction) {
 					case DIRECTIONS.WEST:
-						_roomX1 = currentRoom.x1 - _hallwayLength - _roomWidth;
-						_roomY1 = irandom_range(currentRoom.y1 - _roomHeight + _hallwayWidth, currentRoom.y2 - (_hallwayWidth - 1));
+						_roomX1 = roomToExtendFrom.x1 - _hallwayLength - _roomWidth;
+						_roomY1 = irandom_range(roomToExtendFrom.y1 - _roomHeight + _hallwayWidth, roomToExtendFrom.y2 - (_hallwayWidth - 1));
 						break;
 					case DIRECTIONS.EAST:
-						_roomX1 = currentRoom.x2 + _hallwayLength + 1;
-						_roomY1 = irandom_range(currentRoom.y1 - _roomHeight + _hallwayWidth, currentRoom.y2 - (_hallwayWidth - 1));
+						_roomX1 = roomToExtendFrom.x2 + _hallwayLength + 1;
+						_roomY1 = irandom_range(roomToExtendFrom.y1 - _roomHeight + _hallwayWidth, roomToExtendFrom.y2 - (_hallwayWidth - 1));
 						break;
 					case DIRECTIONS.NORTH:
-						_roomX1 = irandom_range(currentRoom.x1 - _roomWidth + _hallwayWidth, currentRoom.x2 - (_hallwayWidth - 1));
-						_roomY1 = currentRoom.y1 - _hallwayLength - _roomHeight;
+						_roomX1 = irandom_range(roomToExtendFrom.x1 - _roomWidth + _hallwayWidth, roomToExtendFrom.x2 - (_hallwayWidth - 1));
+						_roomY1 = roomToExtendFrom.y1 - _hallwayLength - _roomHeight;
 						break;
 					case DIRECTIONS.SOUTH:
-						_roomX1 = irandom_range(currentRoom.x1 - _roomWidth + _hallwayWidth, currentRoom.x2 - (_hallwayWidth - 1));
-						_roomY1 = currentRoom.y2 + _hallwayLength + 1;
+						_roomX1 = irandom_range(roomToExtendFrom.x1 - _roomWidth + _hallwayWidth, roomToExtendFrom.x2 - (_hallwayWidth - 1));
+						_roomY1 = roomToExtendFrom.y2 + _hallwayLength + 1;
 						break;
 				}
 			
@@ -99,19 +95,21 @@ GenerateNewDungeon = function() {
 			
 				// Connect the new room and previous room with a hallway, and calculate the hallway's four corners
 				switch (_direction) {
+					
 					case DIRECTIONS.WEST:
+					
 						_hallwayX1 = _roomX2 + 1;
 						_hallwayX2 = _hallwayX1 + _hallwayLength - 1;
                  
-						if (_roomY1 < currentRoom.y1) {
-							_minRange = currentRoom.y1;
+						if (_roomY1 < roomToExtendFrom.y1) {
+							_minRange = roomToExtendFrom.y1;
 						}
 						else {
 							_minRange = _roomY1;
 						}
                  
-						if (_roomY2 > currentRoom.y2) {
-							_maxRange = currentRoom.y2 - (_hallwayWidth - 1);
+						if (_roomY2 > roomToExtendFrom.y2) {
+							_maxRange = roomToExtendFrom.y2 - (_hallwayWidth - 1);
 						}
 						else {
 							_maxRange = _roomY2 - (_hallwayWidth - 1);
@@ -119,20 +117,23 @@ GenerateNewDungeon = function() {
                  
 						_hallwayY1 = _minRange + round(abs(_maxRange - _minRange) / 2);
 						_hallwayY2 = _hallwayY1 + (_hallwayWidth - 1);
+						
 						break;
+						
 					case DIRECTIONS.EAST:
+					
 						_hallwayX1 = _roomX1 - _hallwayLength;
 						_hallwayX2 = _hallwayX1 + _hallwayLength - 1;
                  
-						if (_roomY1 < currentRoom.y1) {
-							_minRange = currentRoom.y1;
+						if (_roomY1 < roomToExtendFrom.y1) {
+							_minRange = roomToExtendFrom.y1;
 						}
 						else {
 							_minRange = _roomY1;
 						}
                  
-						if (_roomY2 > currentRoom.y2) {
-							_maxRange = currentRoom.y2 - (_hallwayWidth - 1);
+						if (_roomY2 > roomToExtendFrom.y2) {
+							_maxRange = roomToExtendFrom.y2 - (_hallwayWidth - 1);
 						}
 						else {
 							_maxRange = _roomY2 - (_hallwayWidth - 1);
@@ -141,16 +142,18 @@ GenerateNewDungeon = function() {
 						_hallwayY1 = _minRange + round(abs(_maxRange - _minRange) / 2);
 						_hallwayY2 = _hallwayY1 + (_hallwayWidth - 1);
 						break;
+						
 					case DIRECTIONS.NORTH:
-						if (_roomX1 < currentRoom.x1) {
-							_minRange = currentRoom.x1;
+					
+						if (_roomX1 < roomToExtendFrom.x1) {
+							_minRange = roomToExtendFrom.x1;
 						}
 						else {
 							_minRange = _roomX1;
 						}
                  
-						if (_roomX2 > currentRoom.x2) {
-							_maxRange = currentRoom.x2 - (_hallwayWidth - 1);
+						if (_roomX2 > roomToExtendFrom.x2) {
+							_maxRange = roomToExtendFrom.x2 - (_hallwayWidth - 1);
 						}
 						else {
 							_maxRange = _roomX2 - (_hallwayWidth - 1);
@@ -160,17 +163,20 @@ GenerateNewDungeon = function() {
 						_hallwayX2 = _hallwayX1 + (_hallwayWidth - 1);
 						_hallwayY1 = _roomY2 + 1;
 						_hallwayY2 = _hallwayY1 + _hallwayLength - 1;
+						
 						break;
+						
 					case DIRECTIONS.SOUTH:
-						if (_roomX1 < currentRoom.x1) {
-							_minRange = currentRoom.x1;
+					
+						if (_roomX1 < roomToExtendFrom.x1) {
+							_minRange = roomToExtendFrom.x1;
 						}
 						else {
 							_minRange = _roomX1;
 						}
                  
-						if (_roomX2 > currentRoom.x2) {
-							_maxRange = currentRoom.x2 - (_hallwayWidth - 1);
+						if (_roomX2 > roomToExtendFrom.x2) {
+							_maxRange = roomToExtendFrom.x2 - (_hallwayWidth - 1);
 						}
 						else {
 							_maxRange = _roomX2 - (_hallwayWidth - 1);
@@ -180,6 +186,7 @@ GenerateNewDungeon = function() {
 						_hallwayX2 = _hallwayX1 + (_hallwayWidth - 1);
 						_hallwayY1 = _roomY1 - _hallwayLength;
 						_hallwayY2 = _hallwayY1 + _hallwayLength - 1;
+						
 						break;
 				}
 			
@@ -188,14 +195,12 @@ GenerateNewDungeon = function() {
 				// Check if the hallway is touching a non-wall space
 				
 				for (var xx = _roomX1 - 1; xx <= _roomX2 + 1; xx++) {
-					
 					for (var yy = _roomY1 - 1; yy <= _roomY2 + 1; yy++) {
 					    if (dungeon[# xx, yy] != CELL_TYPES.WALL) {
 					        _isTouching = true;
 							break;
 					    }
 					}
-					
 					if (_isTouching) {
 						break;
 					}
@@ -206,16 +211,14 @@ GenerateNewDungeon = function() {
 					// Check if the hallway is touching another room
 				
 					for (xx = _hallwayX1 - 1; xx <= _hallwayX2 + 1; xx++) {
-					
 						for (yy = _hallwayY1 - 1; yy <= _hallwayY2 + 1; yy++) {
-						    if (xx < currentRoom.x1 || xx > currentRoom.x2 || yy < currentRoom.y1 || yy > currentRoom.y2) {
+						    if (xx < roomToExtendFrom.x1 || xx > roomToExtendFrom.x2 || yy < roomToExtendFrom.y1 || yy > roomToExtendFrom.y2) {
 						        if (dungeon[# xx, yy] == CELL_TYPES.ROOM) {
 						            _isTouching = true;
 									break;
 						        }
 						    }
 						}
-					
 						if (_isTouching) {
 							break;
 						}
@@ -223,21 +226,22 @@ GenerateNewDungeon = function() {
 					
 					if (!_isTouching) {
 					
+						roomToExtendFrom = CreateRoom(_roomX1, _roomY1, _roomX2, _roomY2);
 						CreateHallway(_hallwayX1, _hallwayY1, _hallwayX2, _hallwayY2);
-						CreateRoom(_roomX1, _roomY1, _roomX2, _roomY2);
 						
-						_createdHallway = true;
-						iterations = -1;
+						// Reset failed iterations
+						failedIterations = -1;
+						
 						break;
 					}
 				}
 			}
 			
-			iterations++;
+			failedIterations++;
 			
 		    if (random(branchOdds) < 1) {
 				var _randomRoomIndex = irandom(_roomCount - 1);
-		        currentRoom = roomStructs[_randomRoomIndex];
+		        roomToExtendFrom = rooms[_randomRoomIndex];
 			}
 		}
 		else {
@@ -248,7 +252,7 @@ GenerateNewDungeon = function() {
 			var _roomX2 = _roomX1 + _roomWidth - 1;
 			var _roomY2 = _roomY1 + _roomHeight - 1;
 	
-			CreateRoom(_roomX1, _roomY1, _roomX2, _roomY2);
+			roomToExtendFrom = CreateRoom(_roomX1, _roomY1, _roomX2, _roomY2);
 		}
 	}
 
@@ -258,7 +262,7 @@ GenerateNewDungeon = function() {
 			
 			var _tileInd = 0;
 		
-			if (_cell = CELL_TYPES.ROOM) {
+			if (_cell == CELL_TYPES.ROOM) {
 				_tileInd = 1;
 			}
 			else if (_cell == CELL_TYPES.HALLWAY) {
@@ -271,16 +275,13 @@ GenerateNewDungeon = function() {
 }
 
 CreateRoom = function(_x1, _y1, _x2, _y2) {
-	
-	currentRoom = new DungeonRoom(_x1, _y1, _x2, _y2);
-	array_push(roomStructs, currentRoom);
-	
-	// Fill the dungeon with a room
+	var _newRoom = new DungeonRoom(_x1, _y1, _x2, _y2);
+	array_push(rooms, _newRoom);
 	ds_grid_set_region(dungeon, _x1, _y1, _x2, _y2, CELL_TYPES.ROOM);
+	return _newRoom;
 }
 
 CreateHallway = function(_x1, _y1, _x2, _y2) {
-	// Fill the dungeon with a hallway
 	ds_grid_set_region(dungeon, _x1, _y1, _x2, _y2, CELL_TYPES.HALLWAY);
 }
 
