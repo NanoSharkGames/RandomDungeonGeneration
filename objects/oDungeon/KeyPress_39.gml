@@ -1,1 +1,1 @@
-GenerateNewDungeon();
+generate_new_dungeon();

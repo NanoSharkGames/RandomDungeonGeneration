@@ -7,6 +7,11 @@ function DungeonRoom(_x1, _y1, _x2, _y2) constructor {
 	x2 = _x2;
 	y2 = _y2;
 	
-	width = x2 - x1 + 1;
-	height = y2 - y1 + 1;
+	static get_width = function() {
+		return x2 - x1 + 1;
+	};
+	
+	static get_height = function() {
+		return y2 - y1 + 1;
+	};
 }
