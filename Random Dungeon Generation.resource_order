@@ -6,7 +6,7 @@
   "ResourceOrderSettings":[
     {"name":"rmDungeon","order":2,"path":"rooms/rmDungeon/rmDungeon.yy",},
     {"name":"DungeonRoom","order":1,"path":"scripts/DungeonRoom/DungeonRoom.yy",},
-    {"name":"Init","order":6,"path":"scripts/Init/Init.yy",},
+    {"name":"InitGame","order":6,"path":"scripts/InitGame/InitGame.yy",},
     {"name":"tTile","order":1,"path":"tilesets/tTile/tTile.yy",},
   ],
 }

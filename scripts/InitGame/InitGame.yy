@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"Init",
+  "%Name":"InitGame",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"Init",
+  "name":"InitGame",
   "parent":{
     "name":"Random Dungeon Generation",
     "path":"Random Dungeon Generation.yyp",
